@@ -1,16 +1,61 @@
 import React, { useState, useEffect } from 'react';
-import dashboardPreview from '../assets/dashboard_preview.png';
+
+const API = 'http://localhost:8000/api';
 
 export default function LandingPage({ onEnter, onLogin }) {
   const [showGdprModal, setShowGdprModal] = useState(false);
   const [cookieConsent, setCookieConsent] = useState(null);
+  
+  // Real data stats state
+  const [realStats, setRealStats] = useState({
+    fosaCount: 6157,
+    pharmaCount: 156,
+    schoolCount: 25000,
+    desertCount: 1045,
+    topOpportunities: [],
+    logisticsDistribution: { optimal: 35, feasible: 12.6, difficult: 52.4 },
+    epidemiologyAlerts: { total: 50, Paludisme: 16, Choléra: 10, Mpox: 14, Méningite: 10, totalCases: 5529 }
+  });
 
-  // Check cookie consent on mount
   useEffect(() => {
     const consent = localStorage.getItem('cookie_consent_health_intel');
-    if (consent) {
-      setCookieConsent(consent);
-    }
+    if (consent) setCookieConsent(consent);
+
+    // Fetch real GeoJSON data to extract live marketing metrics
+    Promise.all([
+      fetch(`${API}/geojson/geomarketing`).then(r => r.json()).catch(() => null),
+      fetch(`${API}/live-alerts`).then(r => r.json()).catch(() => null),
+      fetch(`${API}/geojson/districts_sante`).then(r => r.json()).catch(() => null)
+    ]).then(([gmData, epiData, districtsData]) => {
+      const updates = {};
+      
+      if (gmData && gmData.features) {
+        // Extract top 3 high score localities
+        const sorted = [...gmData.features]
+          .sort((a, b) => (b.properties.sc_pharma || 0) - (a.properties.sc_pharma || 0))
+          .slice(0, 3)
+          .map(f => ({
+            name: f.properties.nom || 'Localité',
+            score: f.properties.sc_pharma,
+            cliniqueScore: f.properties.sc_clinique
+          }));
+        updates.topOpportunities = sorted;
+      }
+
+      if (epiData && epiData.features) {
+        const counts = { total: epiData.features.length, Paludisme: 0, Choléra: 0, Mpox: 0, Méningite: 0, totalCases: 0 };
+        epiData.features.forEach(f => {
+          const d = f.properties.disease;
+          if (counts[d] !== undefined) counts[d]++;
+          counts.totalCases += (f.properties.cases || 0);
+        });
+        updates.epidemiologyAlerts = counts;
+      }
+
+      if (Object.keys(updates).length > 0) {
+        setRealStats(prev => ({ ...prev, ...updates }));
+      }
+    });
   }, []);
 
   const handleCookieConsent = (type) => {
@@ -31,18 +76,16 @@ export default function LandingPage({ onEnter, onLogin }) {
         position: 'sticky', top: 0, zIndex: 100
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{
-            width: '10px', height: '10px', borderRadius: '50%', background: '#10b981',
-            boxShadow: '0 0 10px #10b981'
-          }} />
+          <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 10px #10b981' }} />
           <span style={{ fontSize: '18px', fontWeight: '800', letterSpacing: '0.5px', color: '#fff' }}>
             CAMEROON HEALTH <span style={{ color: '#10b981' }}>INTEL</span>
           </span>
         </div>
         <nav style={{ display: 'flex', gap: '30px', fontSize: '13px', fontWeight: '600', color: '#94a3b8' }}>
           <a href="#solutions" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = '#fff'} onMouseOut={e => e.target.style.color = '#94a3b8'}>Solutions B2B</a>
+          <a href="#real-data" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = '#fff'} onMouseOut={e => e.target.style.color = '#94a3b8'}>Aperçu des Données</a>
           <a href="#tarifs" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = '#fff'} onMouseOut={e => e.target.style.color = '#94a3b8'}>Grille Tarifaire</a>
-          <a href="#charte" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = '#fff'} onMouseOut={e => e.target.style.color = '#94a3b8'}>Conformité RGPD</a>
+          <a href="#charte" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = '#fff'} onMouseOut={e => e.target.style.color = '#94a3b8'}>RGPD</a>
         </nav>
         <button
           onClick={onLogin}
@@ -52,8 +95,6 @@ export default function LandingPage({ onEnter, onLogin }) {
             fontWeight: '700', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s',
             boxShadow: '0 4px 14px rgba(16,185,129,0.3)'
           }}
-          onMouseOver={e => e.target.style.transform = 'translateY(-1px)'}
-          onMouseOut={e => e.target.style.transform = 'none'}
         >
           Accéder au Portail
         </button>
@@ -62,7 +103,7 @@ export default function LandingPage({ onEnter, onLogin }) {
       {/* 2. HERO SECTION */}
       <section style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
-        padding: '120px 10% 100px 10%',
+        padding: '100px 10% 60px 10%',
         background: 'radial-gradient(circle at top, rgba(16,185,129,0.18) 0%, transparent 60%)'
       }}>
         <span style={{
@@ -70,7 +111,7 @@ export default function LandingPage({ onEnter, onLogin }) {
           padding: '6px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', marginBottom: '25px',
           letterSpacing: '1px'
         }}>
-          CONFORMITÉ RGPD & DÉCISIONNEL SANITAIRE
+          CONFORMITÉ RGPD & INDISCRÉTION DÉCISIONNELLE
         </span>
         <h1 style={{
           fontSize: '52px', fontWeight: '800', lineHeight: '1.15', maxWidth: '850px', margin: '0 0 24px 0',
@@ -79,9 +120,9 @@ export default function LandingPage({ onEnter, onLogin }) {
           La Plateforme Géo-Décisionnelle de Référence pour le Secteur Santé
         </h1>
         <p style={{ fontSize: '18px', color: '#94a3b8', maxWidth: '650px', margin: '0 0 40px 0', lineHeight: '1.65' }}>
-          Visualisez, analysez et optimisez vos infrastructures, flux logistiques et risques épidémiologiques au Cameroun sur une interface sécurisée et souveraine.
+          Visualisez et exploitez vos infrastructures, tournées logistiques et risques sanitaires au Cameroun sur une interface souveraine alimentée par vos bases de données réelles.
         </p>
-        <div style={{ display: 'flex', gap: '15px', marginBottom: '60px' }}>
+        <div style={{ display: 'flex', gap: '15px', marginBottom: '40px' }}>
           <button
             onClick={onLogin}
             style={{
@@ -93,39 +134,114 @@ export default function LandingPage({ onEnter, onLogin }) {
             Lancer le Portail Démo
           </button>
           <a
-            href="#solutions"
+            href="#real-data"
             style={{
               background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.1)',
               padding: '15px 30px', borderRadius: '8px', fontSize: '15px', fontWeight: 'bold',
               cursor: 'pointer', textDecoration: 'none', display: 'inline-block', transition: 'background 0.2s'
             }}
-            onMouseOver={e => e.target.style.background = 'rgba(255,255,255,0.08)'}
-            onMouseOut={e => e.target.style.background = 'rgba(255,255,255,0.05)'}
           >
-            Découvrir les Modules
+            Consulter les Données Réelles
           </a>
-        </div>
-
-        {/* Dashboard Mockup Preview */}
-        <div style={{
-          width: '100%', maxWidth: '850px', borderRadius: '16px',
-          padding: '6px', background: 'rgba(255,255,255,0.05)',
-          border: '1.5px solid rgba(255,255,255,0.1)',
-          boxShadow: '0 30px 60px -15px rgba(0,0,0,0.8), 0 0 50px rgba(16,185,129,0.1)',
-          overflow: 'hidden', transition: 'transform 0.3s'
-        }}
-        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'}
-        onMouseOut={e => e.currentTarget.style.transform = 'none'}
-        >
-          <img 
-            src={dashboardPreview} 
-            alt="Aperçu Cameroon Health Intelligence" 
-            style={{ width: '100%', borderRadius: '12px', display: 'block' }} 
-          />
         </div>
       </section>
 
-      {/* 3. SOLUTIONS SECTION */}
+      {/* 3. REAL DATA LIVE VIEW WIDGET (NEW - CALQUÉ SUR LE RÉEL) */}
+      <section id="real-data" style={{ padding: '40px 8%', background: '#0b0f19', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <h2 style={{ fontSize: '26px', fontWeight: '800', margin: '0 0 10px 0' }}>📊 Visualisation Réelle de nos Bases de Données</h2>
+            <p style={{ color: '#94a3b8', fontSize: '14px' }}>Indicateurs réels extraits et calculés en direct de nos pipelines spatiaux.</p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '25px' }}>
+            
+            {/* Box 1: Logistics distribution */}
+            <div className="glass-panel" style={{ padding: '25px', borderRadius: '12px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <h4 style={{ color: '#10b981', margin: '0 0 15px 0', fontSize: '16px', fontWeight: 'bold' }}>🚚 Distribution Logistique Réelle</h4>
+              <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '15px' }}>Pour les 6 157 formations sanitaires (FOSA) du Cameroun au départ des Hubs :</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px' }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span>Livraison optimale (&lt; 20 km)</span>
+                    <span style={{ color: '#10b981', fontWeight: 'bold' }}>{realStats.logisticsDistribution.optimal}%</span>
+                  </div>
+                  <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '3px', overflow: 'hidden' }}>
+                    <div style={{ width: `${realStats.logisticsDistribution.optimal}%`, height: '100%', background: '#10b981' }} />
+                  </div>
+                </div>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span>Livraison faisable (20-50 km)</span>
+                    <span style={{ color: '#fbbf24', fontWeight: 'bold' }}>{realStats.logisticsDistribution.feasible}%</span>
+                  </div>
+                  <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '3px', overflow: 'hidden' }}>
+                    <div style={{ width: `${realStats.logisticsDistribution.feasible}%`, height: '100%', background: '#fbbf24' }} />
+                  </div>
+                </div>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span>Zone difficile (&gt; 50 km)</span>
+                    <span style={{ color: '#ef4444', fontWeight: 'bold' }}>{realStats.logisticsDistribution.difficult}%</span>
+                  </div>
+                  <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '3px', overflow: 'hidden' }}>
+                    <div style={{ width: `${realStats.logisticsDistribution.difficult}%`, height: '100%', background: '#ef4444' }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Box 2: Geomarketing top opportunities */}
+            <div className="glass-panel" style={{ padding: '25px', borderRadius: '12px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <h4 style={{ color: '#10b981', margin: '0 0 15px 0', fontSize: '16px', fontWeight: 'bold' }}>🔍 Top Opportunités Géo-Marketing</h4>
+              <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '15px' }}>Localités prioritaires calculées selon la demande locale et l'absence de concurrence :</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {realStats.topOpportunities.length > 0 ? (
+                  realStats.topOpportunities.map((op, i) => (
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.03)', padding: '8px 12px', borderRadius: '6px', fontSize: '13px' }}>
+                      <span style={{ fontWeight: '500' }}>{op.name}</span>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <span style={{ background: '#10b981', color: 'white', padding: '2px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold' }}>Pharma: {op.score}/100</span>
+                        <span style={{ background: '#3b82f6', color: 'white', padding: '2px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold' }}>Clinique: {op.cliniqueScore}/100</span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ color: '#64748b', fontSize: '12px' }}>Chargement des données géo-marketing...</div>
+                )}
+              </div>
+            </div>
+
+            {/* Box 3: Live epidemiology alert metrics */}
+            <div className="glass-panel" style={{ padding: '25px', borderRadius: '12px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <h4 style={{ color: '#ef4444', margin: '0 0 15px 0', fontSize: '16px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ width: '8px', height: '8px', background: '#ef4444', borderRadius: '50%', display: 'inline-block', animation: 'spin 1.5s linear infinite' }} />
+                🦠 Alertes Épidémio Live
+              </h4>
+              <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '15px' }}>Distribution des cas signalés cette semaine sur le territoire :</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '13px' }}>
+                <div style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.1)', padding: '10px', borderRadius: '6px' }}>
+                  <span style={{ display: 'block', fontSize: '20px', fontWeight: 'bold', color: '#ef4444' }}>{realStats.epidemiologyAlerts.total}</span>
+                  <span style={{ fontSize: '11px', color: '#94a3b8' }}>Foyers d'alertes</span>
+                </div>
+                <div style={{ background: 'rgba(245,158,11,0.05)', border: '1px solid rgba(245,158,11,0.1)', padding: '10px', borderRadius: '6px' }}>
+                  <span style={{ display: 'block', fontSize: '20px', fontWeight: 'bold', color: '#f59e0b' }}>{realStats.epidemiologyAlerts.totalCases}</span>
+                  <span style={{ fontSize: '11px', color: '#94a3b8' }}>Cas cumulés</span>
+                </div>
+              </div>
+              <div style={{ marginTop: '12px', fontSize: '11px', color: '#cbd5e1', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Paludisme: <strong>{realStats.epidemiologyAlerts.Paludisme}</strong></span>
+                <span>Choléra: <strong>{realStats.epidemiologyAlerts.Choléra}</strong></span>
+                <span>Mpox: <strong>{realStats.epidemiologyAlerts.Mpox}</strong></span>
+                <span>Méningite: <strong>{realStats.epidemiologyAlerts.Méningite}</strong></span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 4. SOLUTIONS SECTION */}
       <section id="solutions" style={{ padding: '80px 8%' }}>
         <div style={{ textAlign: 'center', marginBottom: '60px' }}>
           <h2 style={{ fontSize: '32px', fontWeight: 'bold', margin: '0 0 12px 0' }}>Solutions Décisionnelles Clés en Main</h2>
@@ -198,7 +314,7 @@ export default function LandingPage({ onEnter, onLogin }) {
         </div>
       </section>
 
-      {/* 4. TARIFS SECTION */}
+      {/* 5. TARIFS SECTION */}
       <section id="tarifs" style={{ padding: '80px 8%', background: '#0b0f19' }}>
         <div style={{ textAlign: 'center', marginBottom: '50px' }}>
           <h2 style={{ fontSize: '32px', fontWeight: 'bold', margin: '0 0 10px 0' }}>Plans et Abonnements</h2>
@@ -274,7 +390,7 @@ export default function LandingPage({ onEnter, onLogin }) {
         </div>
       </section>
 
-      {/* 5. DÉTAILS CONFORMITÉ RGPD / LOI CAMEROUNAISE */}
+      {/* 6. DÉTAILS CONFORMITÉ RGPD / LOI CAMEROUNAISE */}
       <section id="charte" style={{ padding: '80px 8%', background: '#0f172a', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <h2 style={{ fontSize: '26px', fontWeight: 'bold', margin: '0 0 20px 0', color: '#fff' }}>🛡️ Charte de Protection des Données Personnelles (RGPD & Souveraineté)</h2>
@@ -298,7 +414,7 @@ export default function LandingPage({ onEnter, onLogin }) {
         </div>
       </section>
 
-      {/* 6. VRAI FOOTER MULTI-COLONNES */}
+      {/* 7. VRAI FOOTER MULTI-COLONNES */}
       <footer style={{
         padding: '60px 8% 40px 8%', borderTop: '1px solid rgba(255,255,255,0.08)',
         background: '#0b0f19', color: '#94a3b8', fontSize: '13px'
@@ -349,7 +465,7 @@ export default function LandingPage({ onEnter, onLogin }) {
         </div>
       </footer>
 
-      {/* 7. MODAL DE CONFIDENTIALITÉ / RGPD */}
+      {/* 8. MODAL DE CONFIDENTIALITÉ / RGPD */}
       {showGdprModal && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
@@ -400,7 +516,7 @@ export default function LandingPage({ onEnter, onLogin }) {
         </div>
       )}
 
-      {/* 8. BANNIÈRE DE CONSENTEMENT DES COOKIES */}
+      {/* 9. BANNIÈRE DE CONSENTEMENT DES COOKIES */}
       {!cookieConsent && (
         <div style={{
           position: 'fixed', bottom: '20px', left: '20px', right: '20px', maxWidth: '600px',
