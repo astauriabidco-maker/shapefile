@@ -679,3 +679,15 @@ input:checked + .slider:before {
 .geomarketing-metric-val {
   font-weight: 600;
 }
+
+/* Landing Page Cards styling */
+.landing-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.landing-card:hover {
+  transform: translateY(-5px);
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+

@@ -8,6 +8,8 @@ import PremiumReportGenerator from './components/PremiumReportGenerator';
 import RoutingControls from './components/RoutingControls';
 import EpidemiologyControls from './components/EpidemiologyControls';
 import CollabControls from './components/CollabControls';
+import LandingPage from './components/LandingPage';
+import LoginScreen from './components/LoginScreen';
 
 const LAYER_CONFIG = [
   { key: 'regions',                label: 'Régions',                         color: '#0A5C36', type: 'polygon' },
@@ -70,6 +72,7 @@ function App() {
   const [drawLabel, setDrawLabel] = useState('');
   const [drawnItems, setDrawnItems] = useState([]);
   const [eraseAll, setEraseAll] = useState(false);
+  const [view, setView] = useState('landing'); // 'landing' | 'login' | 'app'
   const mapRef = useRef(null);
 
   const toggleLayer = (key) => setLayers(prev => ({ ...prev, [key]: !prev[key] }));
@@ -77,6 +80,14 @@ function App() {
   const handleZoomToRegion = useCallback((bounds) => {
     setZoomTarget([...bounds]);
   }, []);
+
+  if (view === 'landing') {
+    return <LandingPage onLogin={() => setView('login')} onEnter={() => setView('app')} />;
+  }
+
+  if (view === 'login') {
+    return <LoginScreen onLogin={() => setView('app')} onBack={() => setView('landing')} />;
+  }
 
   return (
     <div className="app-container" ref={mapRef}>
@@ -110,9 +121,20 @@ function App() {
 
       {/* Floating Sidebar */}
       <div className="sidebar glass-panel">
-        <div className="header">
+        <div className="header" style={{ position: 'relative' }}>
           <h1>Cameroon Health<br />Intelligence</h1>
           <p>Plateforme Géo-Décisionnelle · 2022</p>
+          <button 
+            onClick={() => setView('landing')}
+            style={{
+              position: 'absolute', top: '5px', right: '5px', background: 'rgba(231, 76, 60, 0.1)',
+              color: '#e74c3c', border: '1px solid rgba(231, 76, 60, 0.2)', padding: '4px 8px',
+              borderRadius: '6px', cursor: 'pointer', fontSize: '11px', fontWeight: 'bold',
+              fontFamily: 'Inter, sans-serif'
+            }}
+          >
+            Quitter
+          </button>
         </div>
 
         {/* Dashboard (BI) */}
