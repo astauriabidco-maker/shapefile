@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import dashboardPreview from '../assets/dashboard_preview.png';
 
 export default function LandingPage({ onEnter, onLogin }) {
   const [showGdprModal, setShowGdprModal] = useState(false);
@@ -80,7 +81,7 @@ export default function LandingPage({ onEnter, onLogin }) {
         <p style={{ fontSize: '18px', color: '#94a3b8', maxWidth: '650px', margin: '0 0 40px 0', lineHeight: '1.65' }}>
           Visualisez, analysez et optimisez vos infrastructures, flux logistiques et risques épidémiologiques au Cameroun sur une interface sécurisée et souveraine.
         </p>
-        <div style={{ display: 'flex', gap: '15px' }}>
+        <div style={{ display: 'flex', gap: '15px', marginBottom: '60px' }}>
           <button
             onClick={onLogin}
             style={{
@@ -103,6 +104,24 @@ export default function LandingPage({ onEnter, onLogin }) {
           >
             Découvrir les Modules
           </a>
+        </div>
+
+        {/* Dashboard Mockup Preview */}
+        <div style={{
+          width: '100%', maxWidth: '850px', borderRadius: '16px',
+          padding: '6px', background: 'rgba(255,255,255,0.05)',
+          border: '1.5px solid rgba(255,255,255,0.1)',
+          boxShadow: '0 30px 60px -15px rgba(0,0,0,0.8), 0 0 50px rgba(16,185,129,0.1)',
+          overflow: 'hidden', transition: 'transform 0.3s'
+        }}
+        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'}
+        onMouseOut={e => e.currentTarget.style.transform = 'none'}
+        >
+          <img 
+            src={dashboardPreview} 
+            alt="Aperçu Cameroon Health Intelligence" 
+            style={{ width: '100%', borderRadius: '12px', display: 'block' }} 
+          />
         </div>
       </section>
 
