@@ -1,0 +1,17 @@
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+node_modules/
+frontend/node_modules/
+frontend/dist/
+backend/data/*.geojson
+!backend/data/regions.geojson
+!backend/data/districts_sante.geojson
+!backend/data/aires_sante.geojson
+!backend/data/formations_sanitaires.geojson
+!backend/data/pharmacies.geojson
+!backend/data/zones_blanches.geojson
+!backend/data/geomarketing.geojson
+!backend/data/routing_zones.geojson
+!backend/data/epidemiology_alerts.geojson
