@@ -1,33 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function LandingPage({ onEnter, onLogin }) {
+  const [showGdprModal, setShowGdprModal] = useState(false);
+  const [cookieConsent, setCookieConsent] = useState(null);
+
+  // Check cookie consent on mount
+  useEffect(() => {
+    const consent = localStorage.getItem('cookie_consent_health_intel');
+    if (consent) {
+      setCookieConsent(consent);
+    }
+  }, []);
+
+  const handleCookieConsent = (type) => {
+    localStorage.setItem('cookie_consent_health_intel', type);
+    setCookieConsent(type);
+  };
+
   return (
     <div style={{
       width: '100vw', minHeight: '100vh', background: '#0f172a', color: 'white',
-      fontFamily: 'Inter, sans-serif', overflowX: 'hidden'
+      fontFamily: 'Inter, sans-serif', overflowX: 'hidden', position: 'relative'
     }}>
       {/* 1. HEADER */}
       <header style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '20px 8%', borderBottom: '1px solid rgba(255,255,255,0.05)',
-        background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(12px)',
+        padding: '16px 8%', borderBottom: '1px solid rgba(255,255,255,0.08)',
+        background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(20px)',
         position: 'sticky', top: 0, zIndex: 100
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981' }}>🇨🇲 Cameroon Health Intel</span>
+          <div style={{
+            width: '10px', height: '10px', borderRadius: '50%', background: '#10b981',
+            boxShadow: '0 0 10px #10b981'
+          }} />
+          <span style={{ fontSize: '18px', fontWeight: '800', letterSpacing: '0.5px', color: '#fff' }}>
+            CAMEROON HEALTH <span style={{ color: '#10b981' }}>INTEL</span>
+          </span>
         </div>
-        <nav style={{ display: 'flex', gap: '30px', fontSize: '14px', fontWeight: '500', color: '#cbd5e1' }}>
-          <a href="#solutions" style={{ textDecoration: 'none', color: 'inherit' }}>Solutions B2B</a>
-          <a href="#tarifs" style={{ textDecoration: 'none', color: 'inherit' }}>Tarifs</a>
-          <a href="#apropos" style={{ textDecoration: 'none', color: 'inherit' }}>À propos</a>
+        <nav style={{ display: 'flex', gap: '30px', fontSize: '13px', fontWeight: '600', color: '#94a3b8' }}>
+          <a href="#solutions" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = '#fff'} onMouseOut={e => e.target.style.color = '#94a3b8'}>Solutions B2B</a>
+          <a href="#tarifs" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = '#fff'} onMouseOut={e => e.target.style.color = '#94a3b8'}>Grille Tarifaire</a>
+          <a href="#charte" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = '#fff'} onMouseOut={e => e.target.style.color = '#94a3b8'}>Conformité RGPD</a>
         </nav>
         <button
           onClick={onLogin}
           style={{
             background: 'linear-gradient(135deg, #10b981, #059669)', color: 'white',
-            border: 'none', padding: '9px 18px', borderRadius: '8px', fontSize: '14px',
-            fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 4px 12px rgba(16,185,129,0.2)'
+            border: 'none', padding: '10px 20px', borderRadius: '8px', fontSize: '13px',
+            fontWeight: '700', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s',
+            boxShadow: '0 4px 14px rgba(16,185,129,0.3)'
           }}
+          onMouseOver={e => e.target.style.transform = 'translateY(-1px)'}
+          onMouseOut={e => e.target.style.transform = 'none'}
         >
           Accéder au Portail
         </button>
@@ -36,116 +61,119 @@ export default function LandingPage({ onEnter, onLogin }) {
       {/* 2. HERO SECTION */}
       <section style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
-        padding: '100px 10% 80px 10%',
-        background: 'radial-gradient(circle at top, rgba(16,185,129,0.15) 0%, transparent 60%)'
+        padding: '120px 10% 100px 10%',
+        background: 'radial-gradient(circle at top, rgba(16,185,129,0.18) 0%, transparent 60%)'
       }}>
         <span style={{
           background: 'rgba(16,185,129,0.1)', color: '#10b981', border: '1px solid rgba(16,185,129,0.2)',
-          padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', marginBottom: '20px'
+          padding: '6px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', marginBottom: '25px',
+          letterSpacing: '1px'
         }}>
-          VERSION 2.0 (PORTAIL B2B SAAS)
+          CONFORMITÉ RGPD & DÉCISIONNEL SANITAIRE
         </span>
         <h1 style={{
-          fontSize: '48px', fontWeight: '800', lineHeight: '1.2', maxWidth: '800px', margin: '0 0 20px 0',
+          fontSize: '52px', fontWeight: '800', lineHeight: '1.15', maxWidth: '850px', margin: '0 0 24px 0',
           background: 'linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
         }}>
-          Pilotez la santé publique et vos implantations commerciales au Cameroun
+          La Plateforme Géo-Décisionnelle de Référence pour le Secteur Santé
         </h1>
-        <p style={{ fontSize: '18px', color: '#94a3b8', maxWidth: '600px', margin: '0 0 35px 0', lineHeight: '1.6' }}>
-          La plateforme géo-décisionnelle de référence pour croiser structures sanitaires, logistique, épidémiologie et opportunités de marché.
+        <p style={{ fontSize: '18px', color: '#94a3b8', maxWidth: '650px', margin: '0 0 40px 0', lineHeight: '1.65' }}>
+          Visualisez, analysez et optimisez vos infrastructures, flux logistiques et risques épidémiologiques au Cameroun sur une interface sécurisée et souveraine.
         </p>
         <div style={{ display: 'flex', gap: '15px' }}>
           <button
             onClick={onLogin}
             style={{
               background: 'linear-gradient(135deg, #10b981, #059669)', color: 'white',
-              border: 'none', padding: '14px 28px', borderRadius: '8px', fontSize: '16px',
-              fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 6px 20px rgba(16,185,129,0.3)'
+              border: 'none', padding: '15px 30px', borderRadius: '8px', fontSize: '15px',
+              fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 6px 22px rgba(16,185,129,0.4)'
             }}
           >
-            Lancer la Démo
+            Lancer le Portail Démo
           </button>
           <a
             href="#solutions"
             style={{
               background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.1)',
-              padding: '14px 28px', borderRadius: '8px', fontSize: '16px', fontWeight: 'bold',
-              cursor: 'pointer', textDecoration: 'none', display: 'inline-block'
+              padding: '15px 30px', borderRadius: '8px', fontSize: '15px', fontWeight: 'bold',
+              cursor: 'pointer', textDecoration: 'none', display: 'inline-block', transition: 'background 0.2s'
             }}
+            onMouseOver={e => e.target.style.background = 'rgba(255,255,255,0.08)'}
+            onMouseOut={e => e.target.style.background = 'rgba(255,255,255,0.05)'}
           >
-            Découvrir les Solutions
+            Découvrir les Modules
           </a>
         </div>
       </section>
 
       {/* 3. SOLUTIONS SECTION */}
       <section id="solutions" style={{ padding: '80px 8%' }}>
-        <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-          <h2 style={{ fontSize: '32px', fontWeight: 'bold', margin: '0 0 10px 0' }}>Solutions Décisionnelles Clés en Main</h2>
-          <p style={{ color: '#94a3b8', fontSize: '16px' }}>5 axes commerciaux conçus pour les directions de santé, distributeurs et investisseurs privés.</p>
+        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+          <h2 style={{ fontSize: '32px', fontWeight: 'bold', margin: '0 0 12px 0' }}>Solutions Décisionnelles Clés en Main</h2>
+          <p style={{ color: '#94a3b8', fontSize: '16px' }}>5 axes technologiques conçus pour les directions de santé, distributeurs et investisseurs privés.</p>
         </div>
 
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '25px', maxWidth: '1200px', margin: '0 auto'
+          gap: '30px', maxWidth: '1200px', margin: '0 auto'
         }}>
           {/* Card 1 */}
           <div className="landing-card" style={{
-            background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)',
-            padding: '25px', borderRadius: '12px', transition: 'all 0.3s'
+            background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
+            padding: '30px', borderRadius: '12px', transition: 'all 0.3s'
           }}>
-            <div style={{ fontSize: '30px', marginBottom: '15px' }}>🔍</div>
-            <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 10px 0' }}>Score d'Opportunité (Géo-Marketing)</h3>
+            <div style={{ fontSize: '32px', marginBottom: '15px' }}>🔍</div>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 10px 0' }}>Géo-Marketing Prédictif</h3>
             <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: '1.6' }}>
-              Identifiez les meilleurs emplacements pour de nouvelles pharmacies ou cliniques en mesurant la demande et la concurrence à moins de 5 km.
+              Identifiez les meilleurs emplacements pour vos officines ou cliniques grâce à notre algorithme spatial de calcul d'opportunité en temps réel.
             </p>
           </div>
 
           {/* Card 2 */}
           <div className="landing-card" style={{
-            background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)',
-            padding: '25px', borderRadius: '12px', transition: 'all 0.3s'
+            background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
+            padding: '30px', borderRadius: '12px', transition: 'all 0.3s'
           }}>
-            <div style={{ fontSize: '30px', marginBottom: '15px' }}>🚚</div>
-            <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 10px 0' }}>Logistique & Supply Chain</h3>
+            <div style={{ fontSize: '32px', marginBottom: '15px' }}>🚚</div>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 10px 0' }}>Supply Chain logistique</h3>
             <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: '1.6' }}>
-              Optimisez l'approvisionnement des points de santé au départ des grands hubs de distribution en fonction du rayon d'action.
+              Optimisez vos tournées de livraison de médicaments au départ des principaux dépôts en calculant les zones d'accès de 20 à 100 km.
             </p>
           </div>
 
           {/* Card 3 */}
           <div className="landing-card" style={{
-            background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)',
-            padding: '25px', borderRadius: '12px', transition: 'all 0.3s'
+            background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
+            padding: '30px', borderRadius: '12px', transition: 'all 0.3s'
           }}>
-            <div style={{ fontSize: '30px', marginBottom: '15px' }}>📄</div>
-            <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 10px 0' }}>Audits de Territoire Premium</h3>
+            <div style={{ fontSize: '32px', marginBottom: '15px' }}>📄</div>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 10px 0' }}>Audits de Territoire PDF</h3>
             <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: '1.6' }}>
-              Générez instantanément des rapports d'audit de 10 pages complets en format PDF A4 à l'échelle d'un district ou d'une région.
+              Compilez automatiquement un rapport complet de 10 pages avec cartes haute définition, listes d'infrastructures et ratios lits/habitants.
             </p>
           </div>
 
           {/* Card 4 */}
           <div className="landing-card" style={{
-            background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)',
-            padding: '25px', borderRadius: '12px', transition: 'all 0.3s'
+            background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
+            padding: '30px', borderRadius: '12px', transition: 'all 0.3s'
           }}>
-            <div style={{ fontSize: '30px', marginBottom: '15px' }}>🦠</div>
-            <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 10px 0' }}>Alertes Épidémiologiques Live</h3>
+            <div style={{ fontSize: '32px', marginBottom: '15px' }}>🦠</div>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 10px 0' }}>Epidémiologie Live</h3>
             <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: '1.6' }}>
-              Visualisez la propagation des alertes sanitaires (Paludisme, Choléra, Mpox, Méningite) simulées en temps réel sur le territoire.
+              Cartographiez en direct la progression des foyers infectieux (paludisme, choléra) pour allouer efficacement vaccins et traitements.
             </p>
           </div>
 
           {/* Card 5 */}
           <div className="landing-card" style={{
-            background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)',
-            padding: '25px', borderRadius: '12px', transition: 'all 0.3s'
+            background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
+            padding: '30px', borderRadius: '12px', transition: 'all 0.3s'
           }}>
-            <div style={{ fontSize: '30px', marginBottom: '15px' }}>✏️</div>
-            <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 10px 0' }}>Outils de Dessin Collaboratifs</h3>
+            <div style={{ fontSize: '32px', marginBottom: '15px' }}>✏️</div>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 10px 0' }}>Workspace Collaboratif</h3>
             <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: '1.6' }}>
-              Annotez la carte en direct, dessinez des zones d'intervention et exportez vos données sous format JSON standard.
+              Délimitez vos zones de campagnes, annotez vos cartes et partagez-les instantanément au format standardisé JSON.
             </p>
           </div>
         </div>
@@ -154,8 +182,8 @@ export default function LandingPage({ onEnter, onLogin }) {
       {/* 4. TARIFS SECTION */}
       <section id="tarifs" style={{ padding: '80px 8%', background: '#0b0f19' }}>
         <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-          <h2 style={{ fontSize: '32px', fontWeight: 'bold', margin: '0 0 10px 0' }}>Des Plans Adaptés à Vos Objectifs</h2>
-          <p style={{ color: '#94a3b8', fontSize: '16px' }}>Une structure tarifaire pensée pour tous les acteurs de l'écosystème santé.</p>
+          <h2 style={{ fontSize: '32px', fontWeight: 'bold', margin: '0 0 10px 0' }}>Plans et Abonnements</h2>
+          <p style={{ color: '#94a3b8', fontSize: '16px' }}>Une tarification claire conforme aux exigences de souveraineté des données.</p>
         </div>
 
         <div style={{
@@ -167,12 +195,12 @@ export default function LandingPage({ onEnter, onLogin }) {
             flex: '1 1 300px', maxWidth: '320px', background: '#0f172a',
             border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', padding: '30px'
           }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981', margin: '0 0 10px 0' }}>Accès Public</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981', margin: '0 0 10px 0' }}>Consultation</h3>
             <div style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '15px' }}>Gratuit</div>
-            <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '20px' }}>Pour l'exploration générale des données.</p>
+            <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '20px' }}>Idéal pour la visualisation rapide des FOSA.</p>
             <ul style={{ paddingLeft: '20px', fontSize: '13px', color: '#cbd5e1', lineHeight: '1.8', marginBottom: '30px' }}>
-              <li>Visualisation des Régions & FOSA</li>
-              <li>Filtres de base</li>
+              <li>Régions, Districts & FOSA</li>
+              <li>Filtres avancés par type</li>
               <li>Recherche de localités</li>
             </ul>
             <button onClick={onLogin} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #10b981', background: 'transparent', color: '#10b981', cursor: 'pointer', fontWeight: 'bold' }}>
@@ -190,16 +218,16 @@ export default function LandingPage({ onEnter, onLogin }) {
               position: 'absolute', top: '-12px', right: '20px', background: '#10b981', color: 'white',
               fontSize: '11px', fontWeight: 'bold', padding: '3px 10px', borderRadius: '10px'
             }}>
-              ONG / Santé
+              SOCIÉTÉS / ONG
             </span>
             <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981', margin: '0 0 10px 0' }}>Professionnel</h3>
             <div style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '15px' }}>99 000 FCFA <span style={{ fontSize: '14px', color: '#94a3b8' }}>/mois</span></div>
-            <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '20px' }}>Pour les projets de santé et gestion épidémique.</p>
+            <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '20px' }}>Accès aux fonctions de dessin et épidémiologie.</p>
             <ul style={{ paddingLeft: '20px', fontSize: '13px', color: '#cbd5e1', lineHeight: '1.8', marginBottom: '30px' }}>
-              <li>Toutes les fonctionnalités de base</li>
-              <li>Alertes Épidémiologiques Live</li>
-              <li>Outils Collaboratifs de Dessin</li>
-              <li>Exportations d'Annotations JSON</li>
+              <li>Visualisation complète des couches</li>
+              <li>Données d'épidémiologie Live</li>
+              <li>Outils de dessin collaboratifs</li>
+              <li>Exports d'annotations de projet</li>
             </ul>
             <button onClick={onLogin} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: 'none', background: 'linear-gradient(135deg, #10b981, #059669)', color: 'white', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 4px 12px rgba(16,185,129,0.2)' }}>
               Essai Gratuit
@@ -211,14 +239,14 @@ export default function LandingPage({ onEnter, onLogin }) {
             flex: '1 1 300px', maxWidth: '320px', background: '#0f172a',
             border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', padding: '30px'
           }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#f59e0b', margin: '0 0 10px 0' }}>Investisseur / B2B</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#f59e0b', margin: '0 0 10px 0' }}>B2B & Distribution</h3>
             <div style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '15px' }}>Sur Mesure</div>
-            <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '20px' }}>Pour les répartiteurs et investisseurs privés.</p>
+            <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '20px' }}>Géo-marketing complet et calcul de tournées.</p>
             <ul style={{ paddingLeft: '20px', fontSize: '13px', color: '#cbd5e1', lineHeight: '1.8', marginBottom: '30px' }}>
-              <li>Algorithme Géo-marketing</li>
-              <li>Calcul de Rayons Logistiques</li>
-              <li>Audits PDF Premium de 10 pages</li>
-              <li>Données d'Opportunité Privées</li>
+              <li>Algorithme de Score d'Implantation</li>
+              <li>Optimisation de Supply Chain</li>
+              <li>Rapports d'Audit PDF de 10 pages</li>
+              <li>SLA et support dédié 24/7</li>
             </ul>
             <button onClick={onLogin} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', background: 'transparent', color: 'white', cursor: 'pointer', fontWeight: 'bold' }}>
               Contacter les Ventes
@@ -227,18 +255,170 @@ export default function LandingPage({ onEnter, onLogin }) {
         </div>
       </section>
 
-      {/* 5. FOOTER */}
+      {/* 5. DÉTAILS CONFORMITÉ RGPD / LOI CAMEROUNAISE */}
+      <section id="charte" style={{ padding: '80px 8%', background: '#0f172a', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '26px', fontWeight: 'bold', margin: '0 0 20px 0', color: '#fff' }}>🛡️ Charte de Protection des Données Personnelles (RGPD & Souveraineté)</h2>
+          <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: '1.7', marginBottom: '15px' }}>
+            La plateforme <strong>Cameroon Health Intelligence</strong> s'engage à respecter les principes directeurs du <strong>RGPD (Règlement Général sur la Protection des Données)</strong> et de la <strong>Loi camerounaise n° 2010/012 relative à la cybersécurité et la cybercriminalité</strong>.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '30px' }}>
+            <div>
+              <h4 style={{ color: '#10b981', margin: '0 0 10px 0', fontSize: '15px', fontWeight: 'bold' }}>1. Hébergement Souverain</h4>
+              <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '1.6', margin: 0 }}>
+                Toutes nos données cartographiques et informations épidémiologiques sont hébergées au Cameroun dans des centres de données hautement sécurisés.
+              </p>
+            </div>
+            <div>
+              <h4 style={{ color: '#10b981', margin: '0 0 10px 0', fontSize: '15px', fontWeight: 'bold' }}>2. Respect de la Vie Privée</h4>
+              <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '1.6', margin: 0 }}>
+                Aucune donnée d'identification personnelle de patient n'est stockée ni traitée sur notre portail. Toutes les statistiques de santé sont agrégées à l'échelle du district ou de la localité.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. VRAI FOOTER MULTI-COLONNES */}
       <footer style={{
-        padding: '40px 8%', borderTop: '1px solid rgba(255,255,255,0.05)',
-        display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '20px',
-        fontSize: '13px', color: '#64748b'
+        padding: '60px 8% 40px 8%', borderTop: '1px solid rgba(255,255,255,0.08)',
+        background: '#0b0f19', color: '#94a3b8', fontSize: '13px'
       }}>
-        <div>© 2026 Cameroon Health Intelligence. Tous droits réservés.</div>
-        <div style={{ display: 'flex', gap: '20px' }}>
-          <span>contact@cameroon-health-intel.cm</span>
-          <span>Mentions Légales</span>
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '40px', marginBottom: '50px'
+        }}>
+          <div>
+            <h4 style={{ color: '#fff', fontSize: '15px', fontWeight: 'bold', marginBottom: '15px' }}>Cameroon Health Intel</h4>
+            <p style={{ lineHeight: '1.6', fontSize: '13px' }}>
+              La plateforme géo-décisionnelle souveraine dédiée à l'analyse et à la distribution sanitaire au Cameroun.
+            </p>
+          </div>
+          <div>
+            <h4 style={{ color: '#fff', fontSize: '14px', fontWeight: 'bold', marginBottom: '15px' }}>Solutions B2B</h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <li><a href="#solutions" style={{ color: 'inherit', textDecoration: 'none' }}>Géo-marketing Clinique</a></li>
+              <li><a href="#solutions" style={{ color: 'inherit', textDecoration: 'none' }}>Supply Chain Logistique</a></li>
+              <li><a href="#solutions" style={{ color: 'inherit', textDecoration: 'none' }}>Audits de Territoire PDF</a></li>
+              <li><a href="#solutions" style={{ color: 'inherit', textDecoration: 'none' }}>Alerte Épidémies Live</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 style={{ color: '#fff', fontSize: '14px', fontWeight: 'bold', marginBottom: '15px' }}>Mentions Légales & RGPD</h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <li><span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setShowGdprModal(true)}>Politique de Confidentialité</span></li>
+              <li><span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setShowGdprModal(true)}>Mentions Cyber-sécurité</span></li>
+              <li><span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setShowGdprModal(true)}>Gestion des Traceurs (Cookies)</span></li>
+            </ul>
+          </div>
+          <div>
+            <h4 style={{ color: '#fff', fontSize: '14px', fontWeight: 'bold', marginBottom: '15px' }}>Dépôts & Hubs</h4>
+            <p style={{ lineHeight: '1.6', margin: 0 }}>
+              <strong>Dépôt Central Yaoundé</strong><br/>
+              Quartier Mvan, Avenue de la Santé<br/>
+              <strong>Dépôt Littoral Douala</strong><br/>
+              Zone Industrielle de Bassa
+            </p>
+          </div>
+        </div>
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: '12px'
+        }}>
+          <span>© 2026 Cameroon Health Intelligence. Tous droits réservés.</span>
+          <span>Dernière mise à jour : Juillet 2026</span>
         </div>
       </footer>
+
+      {/* 7. MODAL DE CONFIDENTIALITÉ / RGPD */}
+      {showGdprModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          background: 'rgba(15,23,42,0.85)', backdropFilter: 'blur(10px)',
+          display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 200
+        }}>
+          <div style={{
+            width: '100%', maxWidth: '600px', maxHeight: '80vh', background: '#1e293b',
+            border: '1.5px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '30px',
+            overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '20px', color: 'white',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px' }}>
+              <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>Politique de Protection des Données (RGPD)</h3>
+              <button onClick={() => setShowGdprModal(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '24px', cursor: 'pointer', lineHeight: 1 }}>×</button>
+            </div>
+            
+            <div style={{ fontSize: '13px', lineHeight: '1.65', display: 'flex', flexDirection: 'column', gap: '15px', color: '#cbd5e1' }}>
+              <p>
+                Conformément aux normes internationales <strong>RGPD</strong> et aux textes en vigueur de la République du Cameroun, nous décrivons ici notre politique de traitement de données :
+              </p>
+              <div>
+                <strong style={{ color: '#10b981' }}>1. Agrégation Obligatoire</strong>
+                <p style={{ margin: '4px 0 0 0' }}>Aucune donnée nominative de patient n'est importée dans le SIG. Toutes les données cliniques sont consolidées à l'échelle territoriale par les directions régionales de la santé.</p>
+              </div>
+              <div>
+                <strong style={{ color: '#10b981' }}>2. Droit d'Accès et de Rectification</strong>
+                <p style={{ margin: '4px 0 0 0' }}>Chaque utilisateur de l'espace collaboratif SaaS possède un droit de consultation, modification et suppression des annotations géographiques créées.</p>
+              </div>
+              <div>
+                <strong style={{ color: '#10b981' }}>3. Conservation des Traces</strong>
+                <p style={{ margin: '4px 0 0 0' }}>Les logs de connexion de l'API sont conservés pendant une durée légale de 6 mois dans un but unique de sécurité, puis automatiquement purgés.</p>
+              </div>
+            </div>
+
+            <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '15px', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowGdprModal(false)}
+                style={{
+                  background: '#10b981', color: 'white', border: 'none', padding: '10px 20px',
+                  borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer'
+                }}
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 8. BANNIÈRE DE CONSENTEMENT DES COOKIES */}
+      {!cookieConsent && (
+        <div style={{
+          position: 'fixed', bottom: '20px', left: '20px', right: '20px', maxWidth: '600px',
+          margin: '0 auto', background: 'rgba(30, 41, 59, 0.95)', backdropFilter: 'blur(20px)',
+          border: '1.5px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '20px',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.5)', zIndex: 150, display: 'flex', flexDirection: 'column', gap: '15px'
+        }}>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+            <span style={{ fontSize: '24px' }}>🍪</span>
+            <div style={{ fontSize: '13px', lineHeight: '1.6', color: '#cbd5e1' }}>
+              <strong>Gestion des traceurs et cookies</strong><br/>
+              Nous utilisons des traceurs techniques uniquement nécessaires à l'authentification et aux préférences d'affichage (zoom, filtres). Aucun cookie publicitaire tiers n'est utilisé, conformément aux règles du RGPD.
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+            <button
+              onClick={() => handleCookieConsent('refuse')}
+              style={{
+                background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.1)',
+                padding: '8px 16px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer'
+              }}
+            >
+              Refuser tout
+            </button>
+            <button
+              onClick={() => handleCookieConsent('accept')}
+              style={{
+                background: '#10b981', color: 'white', border: 'none',
+                padding: '8px 16px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(16,185,129,0.3)'
+              }}
+            >
+              Tout accepter
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
