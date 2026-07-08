@@ -36,6 +36,7 @@ const HEATMAP_OPTIONS = [
   { value: 'ecoles',                label: 'Densité Écoles' },
   { value: 'marches',               label: 'Densité Marchés' },
   { value: 'lieux_culte',           label: 'Densité Lieux de Culte' },
+  { value: 'demographics',          label: '🗺️ Densité Démographique' },
 ];
 
 function App() {

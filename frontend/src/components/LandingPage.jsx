@@ -136,14 +136,20 @@ function AuditWidget() {
       fetch(`${API}/geojson/pharmacies`).then(r => r.json()).catch(() => null),
       fetch(`${API}/geojson/zones_blanches`).then(r => r.json()).catch(() => null),
       fetch(`${API}/geojson/districts_sante`).then(r => r.json()).catch(() => null),
-    ]).then(([fosa, pharma, zones, districts]) => {
+      fetch(`${API}/geojson/regions`).then(r => r.json()).catch(() => null),
+    ]).then(([fosa, pharma, zones, districts, regions]) => {
       const district = districts?.features?.[0]?.properties?.Nom_District || 'Yaoundé Centre';
       const region = districts?.features?.[0]?.properties?.Nom_Region || 'Centre';
       const fosaCount = fosa?.features?.length || 0;
       const pharmaCount = pharma?.features?.length || 0;
       const zoneCount = zones?.features?.length || 0;
       const districtCount = districts?.features?.length || 0;
-      setKpis({ district, region, fosaCount, pharmaCount, zoneCount, districtCount });
+      
+      // Calculate population stats
+      const totalPop = regions?.features?.reduce((acc, f) => acc + (f.properties.population_estimee || 0), 0) || 29300000;
+      const fosaRatio = totalPop > 0 && fosaCount > 0 ? Math.round((fosaCount / totalPop) * 100000) : 0;
+
+      setKpis({ district, region, fosaCount, pharmaCount, zoneCount, districtCount, totalPop, fosaRatio });
     }).finally(() => setLoading(false));
   }, []);
 
@@ -156,10 +162,10 @@ function AuditWidget() {
             Échantillon : {kpis.districtCount} Districts — Région {kpis.region}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-            <KpiBox label="Formations sanitaires" value={kpis.fosaCount.toLocaleString()} color="#0284C7" emoji="🏥" />
+            <KpiBox label="Population analysée" value={`${(kpis.totalPop / 1000000).toFixed(1)}M`} color="#0F172A" emoji="👥" />
+            <KpiBox label="FOSA pour 100k hab." value={kpis.fosaRatio} color="#0284C7" emoji="🏥" />
             <KpiBox label="Pharmacies & Labos" value={kpis.pharmaCount.toLocaleString()} color="#D97706" emoji="💊" />
             <KpiBox label="Déserts médicaux" value={kpis.zoneCount.toLocaleString()} color="#DC2626" emoji="⚠️" />
-            <KpiBox label="Districts cartographiés" value={kpis.districtCount.toLocaleString()} color="#7C3AED" emoji="📍" />
           </div>
           <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>
             → Génération d'un rapport PDF complet de 10 pages disponible en 1 clic

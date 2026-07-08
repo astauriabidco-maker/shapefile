@@ -15,6 +15,7 @@ const defaultDistrictStyle = { fillColor: '#0056B3', weight: 1.5, color: '#0056B
 const getFetchUrl = (key) => {
   if (key === 'routing') return 'http://localhost:8000/api/routing';
   if (key === 'live-alerts') return 'http://localhost:8000/api/live-alerts';
+  if (key === 'demographics') return 'http://localhost:8000/api/geojson/regions'; // Demographics use regions geojson
   return `http://localhost:8000/api/geojson/${key}`;
 };
 
@@ -242,6 +243,9 @@ export default function MapViewer({
       ['District',     p.District_S],
       ['Département',  p.Nom_Dept],
       ['Aire de santé',p.Nom_AS],
+      ['Population Est.', p.population_estimee ? `${p.population_estimee.toLocaleString()} hab.` : null],
+      ['Densité',       p.densite_km2 ? `${p.densite_km2} hab/km²` : null],
+      ['Urbanisation',  p.taux_urbanisation ? `${p.taux_urbanisation}%` : null],
       ['Distance FOSA',p.dist_fosa_km ? `${p.dist_fosa_km} km` : null],
       ['FOSA proche',  p.fosa_proche],
     ];
@@ -323,7 +327,26 @@ export default function MapViewer({
     return { fillColor: '#000', weight: 1, color: '#333', fillOpacity: 0.85 };
   };
 
+  const getDemographicsColor = (density) => {
+    if (!density) return '#e2e8f0'; // gris par défaut
+    if (density > 200) return '#083344'; // cyan-950
+    if (density > 100) return '#0e7490'; // cyan-700
+    if (density > 50)  return '#06b6d4'; // cyan-500
+    if (density > 20)  return '#67e8f9'; // cyan-300
+    return '#cffafe'; // cyan-100
+  };
+
   const getRegionStyle = (feature) => {
+    if (heatmapLayer === 'demographics') {
+      const density = feature.properties.densite_km2;
+      return { 
+        fillColor: getDemographicsColor(density), 
+        weight: 1, 
+        color: '#ffffff', 
+        fillOpacity: 0.8 
+      };
+    }
+    
     if (highlightDistrict) {
       const isTarget = feature.properties.Nom_Region === highlightDistrict || feature.properties.REGION === highlightDistrict || feature.properties.Region === highlightDistrict;
       if (isTarget) {
@@ -385,7 +408,14 @@ export default function MapViewer({
         <TileLayer attribution='&copy; OSM' url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
 
         {/* Polygons */}
-        {activeLayers.regions       && geoData.regions       && <GeoJSON data={geoData.regions}       style={getRegionStyle}    onEachFeature={onEach} />}
+        {(activeLayers.regions || heatmapLayer === 'demographics') && (geoData.regions || geoData.demographics) && 
+          <GeoJSON 
+            key={heatmapLayer === 'demographics' ? 'demographics' : 'regions'}
+            data={geoData.regions || geoData.demographics}       
+            style={getRegionStyle}    
+            onEachFeature={onEach} 
+          />
+        }
         {(activeLayers.districts_sante || highlightDistrict) && geoData.districts_sante && (
           <GeoJSON 
             key={highlightDistrict || 'districts'} 
