@@ -337,17 +337,17 @@ export default function MapViewer({
     return '#cffafe'; // cyan-100
   };
 
+  const getDemographicsStyle = (feature) => {
+    const density = feature.properties.densite_km2;
+    return { 
+      fillColor: getDemographicsColor(density), 
+      weight: 1, 
+      color: '#ffffff', 
+      fillOpacity: 0.8 
+    };
+  };
+
   const getRegionStyle = (feature) => {
-    if (heatmapLayer === 'demographics') {
-      const density = feature.properties.densite_km2;
-      return { 
-        fillColor: getDemographicsColor(density), 
-        weight: 1, 
-        color: '#ffffff', 
-        fillOpacity: 0.8 
-      };
-    }
-    
     if (highlightDistrict) {
       const isTarget = feature.properties.Nom_Region === highlightDistrict || feature.properties.REGION === highlightDistrict || feature.properties.Region === highlightDistrict;
       if (isTarget) {
@@ -409,11 +409,19 @@ export default function MapViewer({
         <TileLayer attribution='&copy; OSM' url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
 
         {/* Polygons */}
-        {(activeLayers.regions || heatmapLayer === 'demographics') && (geoData.regions || geoData.demographics) && 
+        {activeLayers.regions && geoData.regions && 
           <GeoJSON 
-            key={heatmapLayer === 'demographics' ? 'demographics' : 'regions'}
-            data={heatmapLayer === 'demographics' ? (geoData.demographics || geoData.regions) : geoData.regions}       
+            key="regions"
+            data={geoData.regions}       
             style={getRegionStyle}    
+            onEachFeature={onEach} 
+          />
+        }
+        {activeLayers.demographics && geoData.demographics && 
+          <GeoJSON 
+            key="demographics"
+            data={geoData.demographics}       
+            style={getDemographicsStyle}    
             onEachFeature={onEach} 
           />
         }

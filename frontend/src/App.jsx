@@ -18,6 +18,7 @@ import ProfileBadge from './components/ProfileBadge';
 
 const LAYER_CONFIG = [
   { key: 'regions',                label: 'Régions',                         color: '#0A5C36', type: 'polygon' },
+  { key: 'demographics',           label: '🗺️ Densité Démographique',      color: '#06b6d4', type: 'polygon' },
   { key: 'districts_sante',       label: 'Districts de Santé',              color: '#0056B3', type: 'polygon' },
   { key: 'aires_sante',           label: 'Aires de Santé',                  color: '#F2A900', type: 'polygon' },
   { key: 'formations_sanitaires', label: 'Formations Sanitaires (FOSA)',    color: '#0056B3', type: 'point' },
@@ -36,12 +37,12 @@ const HEATMAP_OPTIONS = [
   { value: 'ecoles',                label: 'Densité Écoles' },
   { value: 'marches',               label: 'Densité Marchés' },
   { value: 'lieux_culte',           label: 'Densité Lieux de Culte' },
-  { value: 'demographics',          label: '🗺️ Densité Démographique' },
 ];
 
 function App() {
   const [layers, setLayers] = useState({
     regions: true,
+    demographics: false,
     formations_sanitaires: true,
     zones_blanches: false,
     districts_sante: false,
