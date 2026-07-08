@@ -427,7 +427,7 @@ export default function LandingPage({ onEnter, onLogin }) {
           </span>
         </div>
         <nav style={{ display: 'flex', gap: '30px', fontSize: '14px', fontWeight: '500', color: '#475569' }}>
-          {['#solutions:Solutions B2B', '#tarifs:Grille Tarifaire', '#charte:Conformité RGPD'].map(item => {
+          {['#solutions:Solutions B2B', '#deploiement:Déploiement & Accès', '#charte:Conformité RGPD'].map(item => {
             const [href, label] = item.split(':');
             return (
               <a key={href} href={href} style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }}
@@ -538,28 +538,36 @@ export default function LandingPage({ onEnter, onLogin }) {
         </div>
       </section>
 
-      {/* ── TARIFS ── */}
-      <section id="tarifs" style={{ padding: '80px 8%', background: '#FFFFFF', borderTop: '1px solid #E2E8F0' }}>
+      {/* ── DÉPLOIEMENT & ACCÈS (Subtle Business Model) ── */}
+      <section id="deploiement" style={{ padding: '80px 8%', background: '#FFFFFF', borderTop: '1px solid #E2E8F0' }}>
         <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-          <h2 style={{ fontSize: '32px', fontWeight: '800', margin: '0 0 10px 0', color: '#1E3A8A' }}>Licences et Abonnements</h2>
-          <p style={{ color: '#475569', fontSize: '16px' }}>Une tarification claire conforme aux exigences de souveraineté des données.</p>
+          <h2 style={{ fontSize: '32px', fontWeight: '800', margin: '0 0 10px 0', color: '#1E3A8A' }}>Modalités de Déploiement & Partenariat</h2>
+          <p style={{ color: '#475569', fontSize: '16px' }}>Une intégration sur-mesure adaptée aux acteurs de la santé publique et privée.</p>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '30px', maxWidth: '1000px', margin: '0 auto' }}>
           {[
             {
-              name: 'Consultation', price: 'Gratuit', cible: 'Exploration & visualisation',
-              color: '#64748B', items: ['Régions, Districts & FOSA', 'Filtres avancés par type', 'Recherche de localités'],
-              cta: 'Commencer', outline: true
+              name: 'Accès Public & Recherche',
+              cible: 'Étudiants · Chercheurs · Presse',
+              color: '#64748B',
+              items: ['Visualisation de la cartographie de base', 'Filtres par région et district', 'Données agrégées anonymisées'],
+              icon: '🌍'
             },
             {
-              name: 'Professionnel', price: '99 000 FCFA/mois', cible: 'ONG · Directions de santé',
-              color: '#0284C7', items: ['Épidémiologie Live', 'Outils collaboratifs', 'Exports d\'annotations'],
-              cta: 'Essai Gratuit', badge: 'STANDARD', highlight: true
+              name: 'Partenaire Opérationnel',
+              cible: 'ONG · Directions Régionales de Santé',
+              color: '#0284C7',
+              items: ['Veille épidémiologique en temps réel', 'Outils d\'annotation collaborative', 'Génération de rapports PDF de territoire'],
+              icon: '🤝',
+              highlight: true
             },
             {
-              name: 'Institutionnel & B2B', price: 'Sur Mesure', cible: 'Répartiteurs · Investisseurs · Ministères',
-              color: '#1E3A8A', items: ['Score d\'implantation (géo-marketing)', 'Calcul d\'itinéraires Supply Chain', 'Rapports PDF 10 pages + SLA 24/7'],
-              cta: 'Contacter l\'Équipe', outline: false, solid: true
+              name: 'Licence Entreprise & Supply',
+              cible: 'Répartiteurs (Laborex...) · Investisseurs',
+              color: '#1E3A8A',
+              items: ['Algorithmes de géo-marketing prédictif', 'Optimisation des tournées logistiques', 'Support technique dédié & SLA 24/7'],
+              icon: '🏢',
+              solid: true
             }
           ].map((plan, i) => (
             <div key={i} style={{
@@ -568,28 +576,27 @@ export default function LandingPage({ onEnter, onLogin }) {
               borderRadius: '8px', padding: '30px', position: 'relative',
               boxShadow: plan.highlight || plan.solid ? `0 10px 25px rgba(0,0,0,0.05)` : 'none'
             }}>
-              {plan.badge && <span style={{
-                position: 'absolute', top: '-12px', right: '20px', background: plan.color, color: 'white',
-                fontSize: '11px', fontWeight: 'bold', padding: '4px 10px', borderRadius: '4px'
-              }}>{plan.badge}</span>}
+              <div style={{ fontSize: '32px', marginBottom: '15px' }}>{plan.icon}</div>
               <h3 style={{ fontSize: '18px', fontWeight: '700', color: plan.color, margin: '0 0 8px 0' }}>{plan.name}</h3>
-              <div style={{ fontSize: '28px', fontWeight: '800', marginBottom: '6px', color: '#0F172A' }}>{plan.price}</div>
-              <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '24px' }}>{plan.cible}</p>
-              <ul style={{ paddingLeft: '20px', fontSize: '14px', color: '#475569', lineHeight: '1.8', marginBottom: '30px' }}>
+              <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '24px', fontWeight: '500' }}>{plan.cible}</p>
+              <ul style={{ paddingLeft: '20px', fontSize: '14px', color: '#475569', lineHeight: '1.8', marginBottom: '0' }}>
                 {plan.items.map((item, j) => <li key={j}>{item}</li>)}
               </ul>
-              <button onClick={onLogin} style={{
-                width: '100%', padding: '12px', borderRadius: '6px', cursor: 'pointer', fontWeight: '600',
-                border: plan.outline ? `1px solid ${plan.color}` : 'none',
-                background: plan.highlight || plan.solid ? plan.color : 'transparent',
-                color: plan.highlight || plan.solid ? 'white' : plan.color,
-                transition: 'opacity 0.2s'
-              }}
-              onMouseOver={e => e.currentTarget.style.opacity = '0.9'}
-              onMouseOut={e => e.currentTarget.style.opacity = '1'}
-              >{plan.cta}</button>
             </div>
           ))}
+        </div>
+        <div style={{ textAlign: 'center', marginTop: '50px' }}>
+          <button onClick={onLogin} style={{
+            background: '#1E3A8A', color: 'white',
+            border: 'none', padding: '14px 32px', borderRadius: '6px', fontSize: '15px',
+            fontWeight: '600', cursor: 'pointer', transition: 'opacity 0.2s',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+          }}
+          onMouseOver={e => e.currentTarget.style.opacity = '0.9'}
+          onMouseOut={e => e.currentTarget.style.opacity = '1'}
+          >
+            Contacter la Direction pour un Accès B2B
+          </button>
         </div>
       </section>
 
