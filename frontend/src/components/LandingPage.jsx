@@ -480,7 +480,7 @@ export default function LandingPage({ onEnter, onLogin }) {
           }}
           onMouseOver={e => e.target.style.background = '#172554'}
           onMouseOut={e => e.target.style.background = '#1E3A8A'}>
-            Lancer le Portail Démo
+            Prendre RDV (Démo 30 min)
           </button>
           <a href="#solutions" style={{
             background: '#FFFFFF', color: '#1E3A8A', border: '1px solid #CBD5E1',
@@ -491,6 +491,29 @@ export default function LandingPage({ onEnter, onLogin }) {
           onMouseOut={e => e.target.style.background = '#FFFFFF'}>
             Voir les Données Réelles →
           </a>
+        </div>
+
+        {/* ── MOCKUP IMAGE ── */}
+        <div style={{ marginTop: '60px', width: '100%', maxWidth: '1000px', perspective: '1000px' }}>
+          <img src="/mockup.png" alt="Cameroon Health Intel Dashboard" style={{
+            width: '100%', borderRadius: '12px', border: '1px solid #E2E8F0',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            transform: 'rotateX(5deg)', transition: 'transform 0.5s'
+          }} />
+        </div>
+
+        {/* ── SOCIAL PROOF LOGOS ── */}
+        <div style={{ marginTop: '80px', width: '100%', maxWidth: '900px' }}>
+          <p style={{ fontSize: '13px', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '600', marginBottom: '20px' }}>
+            Conçu pour répondre aux standards de l'écosystème santé
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', flexWrap: 'wrap', alignItems: 'center', opacity: 0.6, filter: 'grayscale(100%)' }}>
+            <span style={{ fontSize: '20px', fontWeight: '800', color: '#0F172A' }}>MINSANTE</span>
+            <span style={{ fontSize: '20px', fontWeight: '800', color: '#0F172A' }}>OMS | WHO</span>
+            <span style={{ fontSize: '20px', fontWeight: '800', color: '#0F172A' }}>UNICEF</span>
+            <span style={{ fontSize: '20px', fontWeight: '800', color: '#0F172A' }}>LABOREX</span>
+            <span style={{ fontSize: '20px', fontWeight: '800', color: '#0F172A' }}>Croix-Rouge</span>
+          </div>
         </div>
       </section>
 
