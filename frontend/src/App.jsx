@@ -11,6 +11,11 @@ import CollabControls from './components/CollabControls';
 import LandingPage from './components/LandingPage';
 import LoginScreen from './components/LoginScreen';
 
+import DailyBrief from './components/DailyBrief';
+import MyDashboard from './components/MyDashboard';
+import TrendsBanner from './components/TrendsBanner';
+import ProfileBadge from './components/ProfileBadge';
+
 const LAYER_CONFIG = [
   { key: 'regions',                label: 'Régions',                         color: '#0A5C36', type: 'polygon' },
   { key: 'districts_sante',       label: 'Districts de Santé',              color: '#0056B3', type: 'polygon' },
@@ -89,6 +94,19 @@ function App() {
     return <LoginScreen onLogin={() => setView('app')} onBack={() => setView('landing')} />;
   }
 
+  const exploreDistrictDuJour = async () => {
+    try {
+      const res = await fetch('http://localhost:8000/api/geojson/districts_sante');
+      const data = await res.json();
+      if (data && data.features && data.features.length > 0) {
+        const rand = data.features[Math.floor(Math.random() * data.features.length)];
+        const name = rand.properties.Nom_District || 'Inconnu';
+        setHighlightDistrict(name);
+        setLayers(prev => ({ ...prev, districts_sante: true }));
+      }
+    } catch(e) {}
+  };
+
   return (
     <div className="app-container" ref={mapRef}>
       {/* Map (background) */}
@@ -117,6 +135,8 @@ function App() {
           onDrawnItemsChange={setDrawnItems}
           eraseAll={eraseAll}
         />
+        {/* Trends Banner at the bottom of the map */}
+        <TrendsBanner />
       </div>
 
       {/* Floating Sidebar */}
@@ -134,6 +154,39 @@ function App() {
             }}
           >
             Quitter
+          </button>
+        </div>
+
+        <DailyBrief onExplore={(type, data) => {
+          if (type === 'geomarketing') {
+             setGeomarketingActive(true);
+             setZoomTarget(data.geometry.coordinates);
+          } else if (type === 'alerts') {
+             setEpidemioActive(true);
+             setEpidemioDisease(data.disease);
+          } else if (type === 'zones_blanches') {
+             setLayers(prev => ({ ...prev, zones_blanches: true }));
+             setZoomTarget(data.geometry.coordinates);
+          }
+        }} />
+
+        <ProfileBadge />
+        
+        <MyDashboard 
+          currentView={highlightDistrict} 
+          onFocusFavorite={(f) => {
+            setHighlightDistrict(f.name);
+            setLayers(prev => ({ ...prev, districts_sante: true }));
+          }} 
+        />
+
+        <div style={{ padding: '0 10px 15px 10px' }}>
+          <button onClick={exploreDistrictDuJour} style={{
+            width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #3b82f6',
+            background: 'rgba(59,130,246,0.1)', color: '#3b82f6', fontWeight: 'bold', cursor: 'pointer',
+            display: 'flex', justifyContent: 'center', gap: '8px', alignItems: 'center'
+          }}>
+            <span>🎲</span> Découvrir le District du Jour
           </button>
         </div>
 
