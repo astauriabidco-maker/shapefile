@@ -493,14 +493,7 @@ export default function LandingPage({ onEnter, onLogin }) {
           </a>
         </div>
 
-        {/* ── MOCKUP IMAGE ── */}
-        <div style={{ marginTop: '60px', width: '100%', maxWidth: '1000px', perspective: '1000px' }}>
-          <img src="/mockup.png" alt="Cameroon Health Intel Dashboard" style={{
-            width: '100%', borderRadius: '12px', border: '1px solid #E2E8F0',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            transform: 'rotateX(5deg)', transition: 'transform 0.5s'
-          }} />
-        </div>
+
 
         {/* ── SOCIAL PROOF LOGOS ── */}
         <div style={{ marginTop: '80px', width: '100%', maxWidth: '900px' }}>
