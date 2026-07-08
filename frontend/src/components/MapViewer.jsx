@@ -13,10 +13,11 @@ const aireSanteStyle= { fillColor: '#F2A900', weight: 1,   color: '#333',  fillO
 const defaultDistrictStyle = { fillColor: '#0056B3', weight: 1.5, color: '#0056B3', fillOpacity: 0.08 };
 
 const getFetchUrl = (key) => {
-  if (key === 'routing') return 'http://localhost:8000/api/routing';
-  if (key === 'live-alerts') return 'http://localhost:8000/api/live-alerts';
-  if (key === 'demographics') return 'http://localhost:8000/api/geojson/regions'; // Demographics use regions geojson
-  return `http://localhost:8000/api/geojson/${key}`;
+  const ts = Date.now();
+  if (key === 'routing') return `http://localhost:8000/api/routing?t=${ts}`;
+  if (key === 'live-alerts') return `http://localhost:8000/api/live-alerts?t=${ts}`;
+  if (key === 'demographics') return `http://localhost:8000/api/geojson/regions?t=${ts}`; // Demographics use regions geojson
+  return `http://localhost:8000/api/geojson/${key}?t=${ts}`;
 };
 
 const API_BASE = 'http://localhost:8000/api/geojson';
@@ -411,7 +412,7 @@ export default function MapViewer({
         {(activeLayers.regions || heatmapLayer === 'demographics') && (geoData.regions || geoData.demographics) && 
           <GeoJSON 
             key={heatmapLayer === 'demographics' ? 'demographics' : 'regions'}
-            data={geoData.regions || geoData.demographics}       
+            data={heatmapLayer === 'demographics' ? (geoData.demographics || geoData.regions) : geoData.regions}       
             style={getRegionStyle}    
             onEachFeature={onEach} 
           />
